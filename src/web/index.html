@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Victorious | Tienda de música</title>
+  <style>
+    :root {
+      --bg: #0e0e13;
+      --panel: #17171f;
+      --panel-2: #1f1f2a;
+      --line: #2b2b3a;
+      --text: #f2f1ee;
+      --muted: #9a98a6;
+      --vinilo: #f5b942;
+      --cd: #5ec8e5;
+      --especial: #e86bd1;
+      --ok: #6fd08c;
+      --warn: #f5b942;
+      --bad: #ff6b6b;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: radial-gradient(1200px 600px at 80% -10%, #2a1d3f 0%, transparent 60%), var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+    .wrap { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+
+    header { padding: 48px 0 28px; }
+    .brand { display: flex; align-items: center; gap: 16px; }
+    .logo {
+      width: 56px; height: 56px; border-radius: 50%;
+      background:
+        radial-gradient(circle at center, var(--vinilo) 0 9px, #111 9px 11px, transparent 11px),
+        repeating-radial-gradient(circle at center, #101015 0 2px, #1d1d26 2px 4px);
+      box-shadow: 0 0 0 2px #2b2b3a, 0 8px 24px rgba(0,0,0,.5);
+      animation: spin 9s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    h1 { font-size: 2.2rem; letter-spacing: -.02em; }
+    .tagline { color: var(--muted); margin-top: 6px; }
+
+    .toolbar {
+      display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
+      justify-content: space-between; margin: 8px 0 24px;
+    }
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+    .chip {
+      background: var(--panel); color: var(--text); border: 1px solid var(--line);
+      padding: 8px 14px; border-radius: 999px; cursor: pointer; font-size: .9rem;
+      transition: border-color .15s, background .15s;
+    }
+    .chip:hover { border-color: #4a4a63; }
+    .chip.activo { background: var(--text); color: var(--bg); border-color: var(--text); font-weight: 600; }
+    .chip .n { opacity: .6; margin-left: 6px; }
+
+    .btn {
+      background: var(--vinilo); color: #1a1405; border: 0; padding: 10px 18px;
+      border-radius: 10px; font-weight: 700; cursor: pointer; font-size: .9rem;
+    }
+    .btn:hover { filter: brightness(1.08); }
+    .btn.sec { background: var(--panel-2); color: var(--text); border: 1px solid var(--line); }
+
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 18px; padding-bottom: 60px; }
+    .card {
+      background: linear-gradient(180deg, var(--panel) 0%, #13131a 100%);
+      border: 1px solid var(--line); border-radius: 16px; overflow: hidden;
+      display: flex; flex-direction: column;
+      transition: transform .18s, border-color .18s;
+    }
+    .card:hover { transform: translateY(-4px); border-color: #4a4a63; }
+    .arte {
+      height: 190px; display: flex; align-items: center; justify-content: center;
+      background: radial-gradient(circle at 50% 40%, #272736 0%, #14141b 70%);
+      position: relative;
+    }
+    .arte img { width: 100%; height: 100%; object-fit: cover; }
+    .disco {
+      width: 140px; height: 140px; border-radius: 50%; position: relative;
+      background: repeating-radial-gradient(circle at center, #0c0c10 0 2px, #1c1c25 2px 4px);
+      box-shadow: 0 10px 28px rgba(0,0,0,.6);
+      transition: transform .6s;
+    }
+    .card:hover .disco { transform: rotate(120deg); }
+    .disco::before {
+      content: ""; position: absolute; inset: 0; border-radius: 50%;
+      background: conic-gradient(from 30deg, transparent 0 30%, rgba(255,255,255,.08) 38%, transparent 46% 80%, rgba(255,255,255,.06) 88%, transparent 96%);
+    }
+    .disco::after {
+      content: ""; position: absolute; top: 50%; left: 50%; width: 48px; height: 48px;
+      transform: translate(-50%, -50%); border-radius: 50%;
+      background: var(--acento, var(--vinilo));
+      box-shadow: inset 0 0 0 14px var(--acento, var(--vinilo)), 0 0 0 3px #0c0c10;
+    }
+    .cuerpo { padding: 16px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
+    .cat {
+      align-self: flex-start; font-size: .72rem; font-weight: 700; letter-spacing: .06em;
+      text-transform: uppercase; padding: 4px 10px; border-radius: 999px;
+      color: var(--acento); border: 1px solid var(--acento);
+    }
+    .nombre { font-size: 1.02rem; line-height: 1.3; font-weight: 650; }
+    .pie { margin-top: auto; display: flex; justify-content: space-between; align-items: baseline; }
+    .precio { font-size: 1.3rem; font-weight: 800; }
+    .stock { font-size: .82rem; color: var(--ok); }
+    .stock.poco { color: var(--warn); }
+    .stock.cero { color: var(--bad); }
+
+    .estado { text-align: center; color: var(--muted); padding: 60px 0; grid-column: 1 / -1; }
+    .skeleton { height: 330px; border-radius: 16px; background: linear-gradient(100deg, var(--panel) 30%, var(--panel-2) 50%, var(--panel) 70%); background-size: 200% 100%; animation: brillo 1.4s infinite; }
+    @keyframes brillo { to { background-position: -200% 0; } }
+
+    .panel {
+      background: var(--panel); border: 1px solid var(--line); border-radius: 16px;
+      padding: 20px; margin-bottom: 24px; display: none;
+    }
+    .panel.abierto { display: block; }
+    .panel h2 { font-size: 1.1rem; margin-bottom: 14px; }
+    .form { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
+    .form label { display: flex; flex-direction: column; gap: 6px; font-size: .82rem; color: var(--muted); }
+    .form input, .form select {
+      background: var(--bg); color: var(--text); border: 1px solid var(--line);
+      border-radius: 8px; padding: 10px; font-size: .95rem;
+    }
+    .form input:focus, .form select:focus { outline: 2px solid var(--vinilo); border-color: transparent; }
+    .acciones { grid-column: 1 / -1; display: flex; gap: 10px; align-items: center; }
+    .msg { font-size: .9rem; }
+    .msg.ok { color: var(--ok); }
+    .msg.error { color: var(--bad); }
+
+    footer { border-top: 1px solid var(--line); padding: 22px 0 40px; color: var(--muted); font-size: .85rem; text-align: center; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <div class="logo"></div>
+        <div>
+          <h1>Victorious</h1>
+          <p class="tagline">Vinilos, CDs y ediciones especiales</p>
+        </div>
+      </div>
+    </header>
+
+    <div class="toolbar">
+      <div class="chips" id="chips"></div>
+      <button class="btn sec" id="btnAgregar" type="button">+ Agregar producto</button>
+    </div>
+
+    <section class="panel" id="panel">
+      <h2>Agregar un producto</h2>
+      <form class="form" id="form">
+        <label>Nombre
+          <input name="nombre" required placeholder="Ej. Abbey Road - The Beatles">
+        </label>
+        <label>Categoría
+          <select name="categoria" required>
+            <option value="vinilo">Vinilo</option>
+            <option value="CD">CD</option>
+            <option value="edicion especial">Edición especial</option>
+          </select>
+        </label>
+        <label>Precio
+          <input name="precio" type="number" min="0" step="0.01" required>
+        </label>
+        <label>Stock
+          <input name="stock" type="number" min="0" step="1" required>
+        </label>
+        <label>URL de imagen (opcional)
+          <input name="imagen_url" placeholder="https://...">
+        </label>
+        <div class="acciones">
+          <button class="btn" type="submit">Guardar</button>
+          <span class="msg" id="msg"></span>
+        </div>
+      </form>
+    </section>
+
+    <main class="grid" id="catalogo"></main>
+  </div>
+
+  <footer>
+    <div class="wrap">Victorious · Proyecto de Desarrollo en la Nube, ITESO</div>
+  </footer>
+
+  <script>
+    const API = "https://uq2wsjwg4f.execute-api.us-east-1.amazonaws.com/prod/productos";
+
+    const COLORES = { "vinilo": "#f5b942", "cd": "#5ec8e5", "edicion especial": "#e86bd1" };
+    const ETIQUETAS = { "vinilo": "Vinilo", "cd": "CD", "edicion especial": "Edición especial" };
+
+    let productos = [];
+    let filtro = "todos";
+
+    const $catalogo = document.getElementById("catalogo");
+    const $chips = document.getElementById("chips");
+    const $panel = document.getElementById("panel");
+    const $msg = document.getElementById("msg");
+
+    // Evita que un nombre con HTML se ejecute en la página
+    function esc(texto) {
+      const d = document.createElement("div");
+      d.textContent = String(texto ?? "");
+      return d.innerHTML;
+    }
+
+    function claveCategoria(c) {
+      return String(c || "").toLowerCase();
+    }
+
+    function dinero(n) {
+      return Number(n).toLocaleString("es-MX", { style: "currency", currency: "MXN" });
+    }
+
+    function pintarChips() {
+      const claves = ["todos", "vinilo", "cd", "edicion especial"];
+      $chips.innerHTML = claves.map(function (k) {
+        const cuenta = k === "todos"
+          ? productos.length
+          : productos.filter(function (p) { return claveCategoria(p.categoria) === k; }).length;
+        const nombre = k === "todos" ? "Todos" : ETIQUETAS[k];
+        const activo = k === filtro ? " activo" : "";
+        return '<button class="chip' + activo + '" data-k="' + k + '" type="button">' +
+               nombre + '<span class="n">' + cuenta + '</span></button>';
+      }).join("");
+    }
+
+    function pintarCatalogo() {
+      const lista = productos
+        .filter(function (p) { return filtro === "todos" || claveCategoria(p.categoria) === filtro; })
+        .sort(function (a, b) { return String(a.nombre).localeCompare(String(b.nombre)); });
+
+      if (lista.length === 0) {
+        $catalogo.innerHTML = '<div class="estado">No hay productos en esta categoría.</div>';
+        return;
+      }
+
+      $catalogo.innerHTML = lista.map(function (p) {
+        const k = claveCategoria(p.categoria);
+        const color = COLORES[k] || "#9a98a6";
+        const etiqueta = ETIQUETAS[k] || p.categoria;
+        const stock = Number(p.stock);
+        let claseStock = "stock";
+        let textoStock = stock + " disponibles";
+        if (stock <= 0) { claseStock += " cero"; textoStock = "Agotado"; }
+        else if (stock <= 5) { claseStock += " poco"; textoStock = "Últimas " + stock; }
+
+        const arte = p.imagen_url
+          ? '<img src="' + esc(p.imagen_url) + '" alt="' + esc(p.nombre) + '">'
+          : '<div class="disco"></div>';
+
+        return '<article class="card" style="--acento:' + color + '">' +
+                 '<div class="arte">' + arte + '</div>' +
+                 '<div class="cuerpo">' +
+                   '<span class="cat">' + esc(etiqueta) + '</span>' +
+                   '<h3 class="nombre">' + esc(p.nombre) + '</h3>' +
+                   '<div class="pie">' +
+                     '<span class="precio">' + dinero(p.precio) + '</span>' +
+                     '<span class="' + claseStock + '">' + textoStock + '</span>' +
+                   '</div>' +
+                 '</div>' +
+               '</article>';
+      }).join("");
+    }
+
+    function pintarCarga() {
+      $catalogo.innerHTML = '<div class="skeleton"></div>'.repeat(4);
+    }
+
+    async function cargar() {
+      pintarCarga();
+      try {
+        const respuesta = await fetch(API);
+        if (!respuesta.ok) throw new Error("Error " + respuesta.status);
+        productos = await respuesta.json();
+        pintarChips();
+        pintarCatalogo();
+      } catch (e) {
+        $catalogo.innerHTML = '<div class="estado">No se pudo cargar el catálogo (' + esc(e.message) +
+          ').<br><br><button class="btn" id="reintentar" type="button">Reintentar</button></div>';
+        document.getElementById("reintentar").addEventListener("click", cargar);
+      }
+    }
+
+    $chips.addEventListener("click", function (e) {
+      const boton = e.target.closest(".chip");
+      if (!boton) return;
+      filtro = boton.dataset.k;
+      pintarChips();
+      pintarCatalogo();
+    });
+
+    document.getElementById("btnAgregar").addEventListener("click", function () {
+      $panel.classList.toggle("abierto");
+    });
+
+    document.getElementById("form").addEventListener("submit", async function (e) {
+      e.preventDefault();
+      const datos = new FormData(e.target);
+      const cuerpo = {
+        nombre: datos.get("nombre").trim(),
+        categoria: datos.get("categoria"),
+        precio: Number(datos.get("precio")),
+        stock: Number(datos.get("stock")),
+        imagen_url: datos.get("imagen_url").trim()
+      };
+      $msg.className = "msg";
+      $msg.textContent = "Guardando...";
+      try {
+        const respuesta = await fetch(API, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(cuerpo)
+        });
+        if (respuesta.status !== 201) {
+          const err = await respuesta.json().catch(function () { return {}; });
+          throw new Error(err.error || ("Error " + respuesta.status));
+        }
+        $msg.className = "msg ok";
+        $msg.textContent = "Producto agregado.";
+        e.target.reset();
+        cargar();
+      } catch (err) {
+        $msg.className = "msg error";
+        $msg.textContent = err.message;
+      }
+    });
+
+    cargar();
+  </script>
+</body>
+</html>
