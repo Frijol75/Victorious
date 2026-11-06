@@ -23,7 +23,7 @@ URL de la API: `https://uq2wsjwg4f.execute-api.us-east-1.amazonaws.com/prod/prod
 | 6 | Lista de pendientes para la final | [docs/06-pendientes.md](docs/06-pendientes.md) |
 
 ## Decisión de arquitectura
-El backend corre en **AWS Lambda** en lugar de un contenedor en EC2, porque Lambda es uno de los servicios de nuestra guía de proyecto final y EC2 no lo es. Por esa razón este repositorio no incluye Dockerfile. API Gateway se agregó respecto a la guía inicial porque expone la Lambda con una URL pública.
+El backend corre en **AWS Lambda** en lugar de un contenedor en EC2, porque Lambda es uno de los servicios de nuestra guía de proyecto final y EC2 no lo es. API Gateway se agregó respecto a la guía inicial porque expone la Lambda con una URL pública.
 
 ## Servicios de AWS utilizados
 - Amazon DynamoDB: tabla `Productos`.
